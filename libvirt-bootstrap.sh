@@ -415,7 +415,7 @@ daemons_running_centos() {
         systemctl stop libvirtd.service > /dev/null 2>&1
         systemctl start libvirtd.service
     fi
-    if [ -f /etc/init.d/libvirt-guests ]; then
+    if [ -f /usr/lib/systemd/system/libvirt-guests.service ]; then
         systemctl stop libvirt-guests.service > /dev/null 2>&1
         systemctl start libvirt-guests.service
     fi
@@ -464,7 +464,7 @@ daemons_running_fedora() {
         systemctl stop libvirtd.service > /dev/null 2>&1
         systemctl start libvirtd.service
     fi
-    if [ -f /etc/init.d/libvirt-guests ]; then
+    if [ -f /usr/lib/systemd/system/libvirt-guests.service ]; then
         systemctl stop libvirt-guests.service > /dev/null 2>&1
         systemctl start libvirt-guests.service
     fi
