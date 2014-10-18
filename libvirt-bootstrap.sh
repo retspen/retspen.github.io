@@ -374,10 +374,7 @@ __check_end_of_life_versions
 #   CentOS Install Functions
 #
 install_centos() {
-    if [ $DISTRO_MAJOR_VERSION -eq 6 ]; then
-        yum -y install kvm libvirt bridge-utils || return 1
-    fi
-    if [ $DISTRO_MAJOR_VERSION -eq 7 ]; then
+    if [ $DISTRO_MAJOR_VERSION -ge 6 ]; then
         yum -y install qemu-kvm libvirt bridge-utils || return 1
     fi
     return 0
@@ -477,6 +474,55 @@ daemons_running_fedora() {
 } 
 #
 #   Ended Fedora Install Functions
+#
+##############################################################################
+
+##############################################################################
+#
+#   Opensuse Install Functions
+#
+install_opensuse() {
+    zypper -n install -l kvm libvirt bridge-utils || return 1
+    return 0
+}
+
+install_opensuse_post() {
+    if [ -f /etc/sysconfig/libvirtd ]; then
+        sed -i 's/#LIBVIRTD_ARGS/LIBVIRTD_ARGS/g' /etc/sysconfig/libvirtd
+    else
+        echoerror "/etc/sysconfig/libvirtd not found. Exiting..."
+        exit 1
+    fi
+    if [ -f /etc/libvirt/libvirtd.conf ]; then
+        sed -i 's/#listen_tls/listen_tls/g' /etc/libvirt/libvirtd.conf
+        sed -i 's/#listen_tcp/listen_tcp/g' /etc/libvirt/libvirtd.conf
+        sed -i 's/#auth_tcp/auth_tcp/g' /etc/libvirt/libvirtd.conf
+    else
+        echoerror "/etc/libvirt/libvirtd.conf not found. Exiting..."
+        exit 1
+    fi
+    if [ -f /etc/libvirt/qemu.conf ]; then
+        sed -i 's/#vnc_listen/vnc_listen/g' /etc/libvirt/qemu.conf
+    else
+        echoerror "/etc/libvirt/qemu.conf not found. Exiting..."
+        exit 1
+    fi
+    return 0
+}
+
+daemons_running_opensuse() {
+    if [ -f /usr/lib/systemd/system/libvirtd.service ]; then
+        systemctl stop libvirtd.service > /dev/null 2>&1
+        systemctl start libvirtd.service
+    fi
+    if [ -f /usr/lib/systemd/system/libvirt-guests.service ]; then
+        systemctl stop libvirt-guests.service > /dev/null 2>&1
+        systemctl start libvirt-guests.service
+    fi
+    return 0
+}
+#
+#   Ended openSUSE Install Functions
 #
 ##############################################################################
 
