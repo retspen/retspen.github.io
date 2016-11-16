@@ -157,6 +157,9 @@ __gather_linux_system_info() {
     rv=$(lsb_release >/dev/null 2>&1)
     if [ $? -eq 0 ]; then
         DISTRO_NAME=$(lsb_release -si)
+        if [ "x$(echo "$DISTRO_NAME" | grep Scientific)" != "x" ]; then
+            DISTRO_NAME="CentOS"
+        fi
         if [ "x$(echo "$DISTRO_NAME" | grep RedHat)" != "x" ]; then
             # Let's convert CamelCase to Camel Case
             DISTRO_NAME=$(__camelcase_split "$DISTRO_NAME")
