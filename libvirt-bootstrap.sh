@@ -586,7 +586,11 @@ daemons_running_ubuntu() {
 #
 install_debian() {
     apt-get update || return 1
-    apt-get -y install kvm libvirt-bin bridge-utils sasl2-bin || return 1
+    if [ $DISTRO_MAJOR_VERSION -ge 8 ]; then
+        apt-get -y install kvm libvirt-daemon-system bridge-utils sasl2-bin || return 1
+    else
+        apt-get -y install kvm libvirt-bin bridge-utils sasl2-bin || return 1
+    fi
     return 0
 }
 
